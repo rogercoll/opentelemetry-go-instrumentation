@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"os"
 	"time"
 
 	"go.uber.org/zap"
@@ -57,12 +58,19 @@ func main() {
 		fmt.Printf("error creating zap logger, error:%v", err)
 		return
 	}
-	port := fmt.Sprintf(":%d", 8080)
-	logger.Info("starting http server", zap.String("port", port))
+
+	addr := ":"
+	if len(os.Args) > 1 {
+		addr += os.Args[1]
+	} else {
+		addr += "8080"
+	}
+
+	logger.Info("starting http server", zap.String("port", addr))
 
 	s := NewServer()
 	mux := setupHandler(s)
-	if err := http.ListenAndServe(port, mux); err != nil {
+	if err := http.ListenAndServe(addr, mux); err != nil {
 		logger.Error("error running server", zap.Error(err))
 	}
 }
