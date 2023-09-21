@@ -40,7 +40,12 @@ func NewServer() *Server {
 func (s *Server) rolldice(w http.ResponseWriter, _ *http.Request) {
 	n := s.rand.Intn(6) + 1
 	logger.Info("rolldice called", zap.Int("dice", n))
-	fmt.Fprintf(w, "%v", n)
+	if n == 3 {
+		w.WriteHeader(400 + s.rand.Intn(99))
+	} else {
+
+		fmt.Fprintf(w, "%v", n)
+	}
 }
 
 var logger *zap.Logger
